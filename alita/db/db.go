@@ -21,6 +21,23 @@ import (
 	"github.com/divkix/Alita_Robot/alita/utils/tracing"
 )
 
+// isCliModeActive returns true if the program is running with CLI flags
+// that should skip database initialization (--version, --health, -v).
+// This allows init() functions to return early without requiring DB connection.
+func isCliModeActive() bool {
+	if len(os.Args) < 2 {
+		return false
+	}
+
+	for _, arg := range os.Args[1:] {
+		switch arg {
+		case "--version", "-version", "-v", "--health", "-health":
+			return true
+		}
+	}
+	return false
+}
+
 // Message type constants - maintain compatibility with existing code
 const (
 	// TEXT types of senders
@@ -368,7 +385,6 @@ type DevSettings struct {
 	ID        uint      `gorm:"primaryKey;autoIncrement" json:"-"`
 	UserId    int64     `gorm:"column:user_id;uniqueIndex;not null" json:"user_id,omitempty"`
 	IsDev     bool      `gorm:"column:is_dev;default:false" json:"is_dev,omitempty"`
-	Dev       bool      `gorm:"column:dev;default:false" json:"dev,omitempty"`     // Dev flag (legacy)
 	Sudo      bool      `gorm:"column:sudo;default:false" json:"sudo,omitempty"` // Sudo privileges
 	CreatedAt time.Time `gorm:"column:created_at" json:"created_at,omitempty"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updated_at,omitempty"`
@@ -427,7 +443,6 @@ func (ConnectionSettings) TableName() string {
 type ConnectionChatSettings struct {
 	ID           uint      `gorm:"primaryKey;autoIncrement" json:"-"`
 	ChatId       int64     `gorm:"column:chat_id;uniqueIndex;not null" json:"chat_id,omitempty"`
-	Enabled      bool      `gorm:"column:enabled;default:true" json:"enabled,omitempty"`       // Connection enabled
 	AllowConnect bool      `gorm:"column:allow_connect;default:true" json:"allow_connect,omitempty"`
 	CreatedAt    time.Time `gorm:"column:created_at" json:"created_at,omitempty"`
 	UpdatedAt    time.Time `gorm:"column:updated_at" json:"updated_at,omitempty"`
@@ -610,6 +625,12 @@ var (
 
 // Initialize database connection and auto-migrate
 func init() {
+	// Skip DB initialization when running in CLI mode (--version, --health)
+	// This allows these flags to work without requiring database connection.
+	if isCliModeActive() {
+		return
+	}
+
 	// Skip DB initialization when no database URL is configured (e.g., unit tests without DB)
 	if os.Getenv("DATABASE_URL") == "" {
 		return

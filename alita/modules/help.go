@@ -201,7 +201,8 @@ func (moduleStruct) about(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	if query := ctx.CallbackQuery; query != nil {
 		if query.Message == nil {
-			_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: "Invalid request."})
+			text, _ := tr.GetString("common_callback_invalid_request")
+			_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: text})
 			return ext.EndGroups
 		}
 		response := ""
@@ -319,7 +320,9 @@ func (moduleStruct) helpButtonHandler(b *gotgbot.Bot, ctx *ext.Context) error {
 		return ext.EndGroups
 	}
 	if query.Message == nil {
-		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: "Invalid request."})
+		tr := i18n.MustNewTranslator(db.GetLanguage(ctx))
+		text, _ := tr.GetString("common_callback_invalid_request")
+		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: text})
 		return ext.EndGroups
 	}
 	module := ""
@@ -477,7 +480,9 @@ func (moduleStruct) botConfig(b *gotgbot.Bot, ctx *ext.Context) error {
 	}
 	msg := query.Message
 	if msg == nil {
-		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: "Invalid request."})
+		tr := i18n.MustNewTranslator(db.GetLanguage(ctx))
+		text, _ := tr.GetString("common_callback_invalid_request")
+		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: text})
 		return ext.EndGroups
 	}
 
@@ -563,6 +568,7 @@ func (moduleStruct) botConfig(b *gotgbot.Bot, ctx *ext.Context) error {
 		b,
 		text,
 		&gotgbot.EditMessageTextOpts{
+			ParseMode: helpers.HTML,
 			LinkPreviewOptions: &gotgbot.LinkPreviewOptions{
 				IsDisabled: true,
 			},
@@ -595,7 +601,11 @@ func (moduleStruct) help(b *gotgbot.Bot, ctx *ext.Context) error {
 	if ctx.Message.Chat.Type == "private" {
 		if len(args) == 1 {
 			tr := i18n.MustNewTranslator(db.GetLanguage(ctx))
-			mainHelpText := getMainHelp(tr, html.EscapeString(msg.From.FirstName))
+			name := "User"
+			if msg.From != nil {
+				name = html.EscapeString(msg.From.FirstName)
+			}
+			mainHelpText := getMainHelp(tr, name)
 			_, err := b.SendMessage(chat.Id,
 				mainHelpText,
 				&gotgbot.SendMessageOpts{

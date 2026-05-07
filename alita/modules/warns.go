@@ -478,6 +478,15 @@ func (moduleStruct) warns(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	userId := extraction.ExtractUser(b, ctx)
 	if userId == -1 {
+		if ctx.EffectiveUser == nil {
+			text, _ := tr.GetString("common_anonymous_user_error")
+			_, err := msg.Reply(b, text, nil)
+			if err != nil {
+				log.Error(err)
+				return err
+			}
+			return ext.EndGroups
+		}
 		userId = ctx.EffectiveUser.Id
 	} else if chat_status.IsChannelId(userId) {
 		text, _ := tr.GetString("common_anonymous_user_error")
@@ -567,10 +576,17 @@ func (moduleStruct) rmWarnButton(b *gotgbot.Bot, ctx *ext.Context) error {
 	}
 	if userMatch == "" {
 		log.Warnf("[Warns] Invalid callback data format: %s", query.Data)
-		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: "Invalid request."})
+		text, _ := tr.GetString("common_callback_invalid_request")
+		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: text})
 		return ext.EndGroups
 	}
-	userId, _ := strconv.Atoi(userMatch)
+	userId, parseErr := strconv.Atoi(userMatch)
+	if parseErr != nil {
+		log.Errorf("[Warns] Failed to parse user ID from callback: %v", parseErr)
+		text, _ := tr.GetString("common_callback_invalid_request")
+		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: text})
+		return ext.EndGroups
+	}
 	var replyText string
 
 	res := db.RemoveWarn(int64(userId), chat.Id)
@@ -797,7 +813,8 @@ func (moduleStruct) warnsButtonHandler(b *gotgbot.Bot, ctx *ext.Context) error {
 	}
 	if response == "" {
 		log.Warnf("[Warns] Invalid callback data format: %s", query.Data)
-		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: "Invalid request."})
+		text, _ := tr.GetString("common_callback_invalid_request")
+		_, _ = query.Answer(b, &gotgbot.AnswerCallbackQueryOpts{Text: text})
 		return ext.EndGroups
 	}
 	var helpText string

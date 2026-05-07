@@ -63,13 +63,13 @@ func main() {
 	}
 
 	// Version check - print version and exit without requiring services
-	// Note: This only works if BOT_TOKEN is not set (otherwise db/cache init runs before main)
+	// Note: init() functions in config/db now detect CLI mode and skip heavy initialization
 	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "-version" || os.Args[1] == "-v") {
 		// Config always has BotVersion set (it's a hardcoded default in LoadConfig)
 		// If BOT_TOKEN is not set, config init sets AppConfig to empty Config{}, so we need to check
 		version := config.AppConfig.BotVersion
 		if version == "" {
-			version = "2.1.3" // Fallback to hardcoded version if config wasn't loaded
+			version = "v2.17.11" // Fallback to hardcoded version if config wasn't loaded
 		}
 		fmt.Println(version)
 		os.Exit(0)
@@ -206,7 +206,8 @@ func main() {
 	// Initialize async processing system
 	if config.AppConfig.EnableAsyncProcessing {
 		async.InitializeAsyncProcessor()
-		defer async.StopAsyncProcessor()
+		// Note: defer async.StopAsyncProcessor() removed - shutdown happens via os.Exit()
+		// The stop is now handled by the shutdown manager registered below
 	}
 
 	// Create dispatcher with limited max routines and proper error recovery
@@ -262,22 +263,28 @@ func main() {
 		error_handling.SetOnErrorCallback(monitoring.GlobalRecordError)
 		tracing.SetOnProcessUpdateCallback(monitoring.GlobalRecordMessage)
 		statsCollector.Start()
-		defer statsCollector.Stop()
 	}
 
 	if config.AppConfig.EnablePerformanceMonitoring {
 		autoRemediation = monitoring.NewAutoRemediationManager(statsCollector)
 		autoRemediation.Start()
-		defer autoRemediation.Stop()
 	}
 
 	// Initialize activity monitoring for automatic group activity tracking
 	activityMonitor = monitoring.NewActivityMonitor()
 	activityMonitor.Start()
-	defer activityMonitor.Stop()
 
 	// Setup graceful shutdown
 	shutdownManager := shutdown.NewManager()
+
+	// Register async processor shutdown handler (if enabled)
+	if config.AppConfig.EnableAsyncProcessing {
+		shutdownManager.RegisterHandler(func() error {
+			log.Info("[Shutdown] Stopping async processor...")
+			async.StopAsyncProcessor()
+			return nil
+		})
+	}
 
 	shutdownManager.RegisterHandler(func() error {
 		log.Info("[Shutdown] Stopping monitoring systems...")
@@ -424,6 +431,12 @@ func main() {
 		}
 		log.Info("[Polling] Removed Webhook!")
 
+		// Load modules before polling starts so incoming updates always have handlers.
+		alita.LoadModules(dispatcher)
+
+		// list modules from modules dir
+		log.Infof("[Modules] Loaded modules: %s", alita.ListModules())
+
 		// start the bot in polling mode
 		err = updater.StartPolling(b,
 			&ext.PollingOpts{
@@ -438,12 +451,6 @@ func main() {
 		}
 		log.Info("[Polling] Started Polling...!")
 		config.AppConfig.WorkingMode = "polling"
-
-		// Load modules
-		alita.LoadModules(dispatcher)
-
-		// list modules from modules dir
-		log.Infof("[Modules] Loaded modules: %s", alita.ListModules())
 
 		// Set Commands of Bot
 		log.Info("Setting Custom Commands for PM...!")

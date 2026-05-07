@@ -1153,6 +1153,22 @@ formatting_random: |
   यह यादृच्छिक रूप से पहला संदेश "नमस्ते" या दूसरा संदेश "कैसे हैं आप" भेजने के बीच चुनेगा।
 
   इसका उपयोग Alita को थोड़ा अधिक अनुकूलित महसूस कराने के लिए करें! (केवल फ़िल्टर/नोट्स में काम करता है)
+
+  स्वागत संदेश का उदाहरण:
+
+  - हर बार जब कोई नया उपयोगकर्ता शामिल होता है, उन्हें यहां दिखाए गए तीन संदेशों में से एक प्रस्तुत किया जाएगा।
+
+  -> /filter "hey"
+
+  नमस्ते <code>{first}</code>!
+
+  %%%
+
+  ओह, <code>{first}</code> आप कैसे हैं?
+
+  %%%
+
+  क्या हाल है? <code>{first}</code>
 formatting_press_button: "मार्कडाउन सहायता प्राप्त करने के लिए नीचे बटन दबाएं!"
 formatting_large_options: "Alita आपके संदेशों को अधिक अभिव्यंजक बनाने के लिए बड़ी संख्या में फॉर्मेटिंग विकल्पों का समर्थन करता है। एक नज़र डालें!"
 
@@ -1619,7 +1635,7 @@ misc_chat_id: "<b>चैट ID:</b> <code>%d</code>"
 misc_user_id: "<b>%s की ID:</b> <code>%d</code>"
 misc_forwarded_from_user: "<b>%s से फॉरवर्ड की गई ID:</b> <code>%d</code>"
 misc_forwarded_from_chat: "<b>चैट %s से फॉरवर्ड की गई ID:</b> <code>%d</code>"
-misc_gif_id: "<b>GIF ID:</b> <code>%s</code>"
+misc_gif_id: "<b>GIF आईडी:</b> <code>%s</code>"
 misc_sticker_id: "<b>स्टिकर ID:</b> <code>%s</code>"
 misc_user_id_is: "%s की ID <code>%d</code> है"
 misc_your_id_private: "आपकी ID <code>%d</code> है"
@@ -1911,22 +1927,21 @@ common_settings_save_failed: "Settings save karne mein error. Baad mein try kare
 devs_chatlist_error: "Chat list generate karne mein error. Phir try karein."
 
 # Reactions module strings
-# TODO: Translate
 reactions_help_msg: |
-  <b>🎭 Auto-Reactions</b>
+  <b>🎭 ऑटो-रिएक्शन</b>
 
-  Automatically react to messages with specific keywords!
+  विशिष्ट कीवर्ड्स के साथ संदेशों पर स्वचालित रूप से प्रतिक्रिया करें!
 
-  Setup automated emoji reactions that trigger when users send specific words.
+  उपयोगकर्ताओं द्वारा विशिष्ट शब्द भेजने पर ट्रिगर होने वाले ऑटोमेटेड इमोजी रिएक्शन सेटअप करें।
 
-  <b>Admin Commands:</b>
-  • /addreaction <keyword> <emoji> - Add an auto-reaction
-  • /removereaction <keyword> - Remove a reaction
-  • /reactions - List configured reactions
-  • /resetreactions - Clear all reactions
+  <b>एडमिन कमांड:</b>
+  • /addreaction <कीवर्ड> <इमोजी> - एक ऑटो-रिएक्शन जोड़ें
+  • /removereaction <कीवर्ड> - एक रिएक्शन हटाएं
+  • /reactions - कॉन्फ़िगर किए गए रिएक्शन की सूची देखें
+  • /resetreactions - सभी रिएक्शन साफ़ करें
 
-  <b>Example:</b>
-  • /addreaction hello 👋 - Bot reacts with 👋 when someone says "hello"
+  <b>उदाहरण:</b>
+  • /addreaction hello 👋 - बॉट 👋 से रिएक्ट करता है जब कोई "hello" कहता है
 
 reactions_add_usage: "उपयोग: /addreaction <कीवर्ड> <इमोजी>"
 reactions_invalid_emoji: "कृपया एक मान्य इमोजी दें।"
@@ -1943,107 +1958,131 @@ reactions_reset_success: "इस चैट के सभी रिएक्श�
 
 # Backup/Restore module strings
 backup_help_msg: |
-  <b>📦 Backup & Restore</b>
+  <b>📦 बैकअप और रिस्टोर</b>
 
-  Backup and restore your group settings using these commands:
+  अपने ग्रुप सेटिंग्स को JSON फाइलों का उपयोग करके बैकअप और रिस्टोर करें।
 
-  <b>User Commands:</b>
-  • /export - Export all group settings to a JSON file
-  • /export notes filters rules - Export specific modules only
+  <b>उपयोगकर्ता कमांड:</b>
+  • /export - सभी ग्रुप सेटिंग्स को JSON फाइल में एक्सपोर्ट करें
+  • /export notes filters rules - केवल विशिष्ट मॉड्यूल एक्सपोर्ट करें
 
-  <b>Creator Commands:</b>
-  • /import - Reply to a backup file to restore settings
-  • /import notes filters - Import only specific modules
-  • /reset - Reset all settings to default
-  • /reset warnings locks - Reset specific modules only
+  <b>क्रिएटर कमांड:</b>
+  • /import - सेटिंग्स रिस्टोर करने के लिए बैकअप फाइल का जवाब दें
+  • /import notes filters - केवल विशिष्ट मॉड्यूल आयात करें
+  • /reset - सभी सेटिंग्स डिफ़ॉल्ट पर रीसेट करें
+  • /reset warnings locks - केवल विशिष्ट मॉड्यूल रीसेट करें
 
-  <b>Rate Limits:</b>
-  • Export: 1 per 5 minutes
-  • Import: 1 per 10 minutes
-  • Reset: 1 per hour
+  <b>रेट लिमिट:</b>
+  • एक्सपोर्ट: 5 मिनट में 1 बार
+  • इम्पोर्ट: 10 मिनट में 1 बार
+  • रीसेट: 1 घंटे में 1 बार
 
-backup_export_button: "📤 Export"
-backup_import_button: "📥 Import"
+backup_export_button: "📤 एक्सपोर्ट"
+backup_import_button: "📥 इम्पोर्ट"
+
 backup_export_success: |
-  <b>✅ Export Successful!</b>
+  <b>✅ एक्सपोर्ट सफल!</b>
 
-  <b>Chat:</b> %s
-  <b>Modules exported:</b> %d
-  <b>Exported at:</b> %s
+  <b>चैट:</b> %s
+  <b>एक्सपोर्ट किए गए मॉड्यूल:</b> %d
+  <b>एक्सपोर्ट समय:</b> %s
 
-  <b>Modules:</b>
+  <b>मॉड्यूल:</b>
   %s
 
-backup_export_success_text: "✅ Successfully exported %d modules. Download the backup file above."
-backup_export_rate_limited: "⏳ Please wait <b>%s</b> before exporting again."
-backup_export_no_modules: "❌ No exportable modules found for this chat."
-backup_export_failed: "❌ Failed to export settings. Please try again later."
+backup_export_success_text: "✅ सफलतापूर्वक %d मॉड्यूल एक्सपोर्ट किए गए। ऊपर दी गई बैकअप फाइल डाउनलोड करें।"
+backup_export_rate_limited: "⏳ फिर से एक्सपोर्ट करने से पहले <b>%s</b> प्रतीक्षा करें।"
+backup_export_no_modules: "❌ इस चैट के लिए कोई एक्सपोर्ट करने योग्य मॉड्यूल नहीं मिले।"
+backup_export_failed: "❌ सेटिंग्स एक्सपोर्ट करने में विफल। कृपया बाद में पुनः प्रयास करें।"
 
 backup_import_success: |
-  <b>✅ Import Successful!</b>
+  <b>✅ इम्पोर्ट सफल!</b>
 
-  <b>Modules imported:</b> %d
+  <b>इम्पोर्ट किए गए मॉड्यूल:</b> %d
 
-  <b>Modules:</b>
+  <b>मॉड्यूल:</b>
   %s
 
-backup_import_rate_limited: "⏳ Please wait <b>%s</b> before importing again."
-backup_import_no_reply: "❌ Please reply to a backup file with <code>/import</code>."
-backup_import_invalid_file: "❌ Invalid backup file format. Please send a valid JSON backup file."
-backup_import_file_too_large: "❌ Backup file is too large. Maximum size is 10MB."
-backup_import_download_failed: "❌ Failed to download backup file. Please try again."
-backup_import_version_mismatch: "⚠️ This backup was created with a different version. Some settings may not import correctly."
-backup_import_creator_only: "❌ Only the group creator can import settings."
+backup_import_rate_limited: "⏳ फिर से इम्पोर्ट करने से पहले <b>%s</b> प्रतीक्षा करें।"
+backup_import_no_reply: "❌ कृपया बैकअप फाइल का जवाब <code>/import</code> के साथ दें।"
+backup_import_invalid_file: "❌ अमान्य बैकअप फाइल प्रारूप। कृपया एक मान्य JSON बैकअप फाइल भेजें।"
+backup_import_file_too_large: "❌ बैकअप फाइल बहुत बड़ी है। अधिकतम आकार 10MB है।"
+backup_import_download_failed: "❌ बैकअप फाइल डाउनलोड करने में विफल। कृपया पुनः प्रयास करें।"
+backup_import_version_mismatch: "⚠️ यह बैकअप एक अलग संस्करण के साथ बनाया गया था। कुछ सेटिंग्स सही ढंग से इम्पोर्ट नहीं हो सकती हैं।"
+backup_import_creator_only: "❌ केवल ग्रुप क्रिएटर ही सेटिंग्स इम्पोर्ट कर सकते हैं।"
+
 backup_import_confirm: |
-  <b>⚠️ Confirm Import</b>
+  <b>⚠️ इम्पोर्ट की पुष्टि करें</b>
 
-  You are about to import <b>%s modules</b>:
+  आप <b>%s मॉड्यूल</b> इम्पोर्ट करने वाले हैं:
   %s
 
-  This will overwrite existing settings. Are you sure?
+  यह मौजूदा सेटिंग्स को ओवरराइट कर देगा। क्या आप सुनिश्चित हैं?
 
-backup_import_expired: "❌ Import request has expired. Please start again with <code>/import</code>."
-backup_import_cancelled: "❌ Import cancelled."
-backup_import_failed: "❌ Import failed: %s"
+backup_import_expired: "❌ इम्पोर्ट अनुरोध समाप्त हो गया है। कृपया <code>/import</code> के साथ फिर से शुरू करें।"
+backup_import_cancelled: "❌ इम्पोर्ट रद्द कर दिया गया।"
+backup_import_failed: "❌ इम्पोर्ट विफल: %s"
 
 backup_reset_success: |
-  <b>✅ Reset Successful!</b>
+  <b>✅ रीसेट सफल!</b>
 
-  <b>Modules reset:</b> %d
+  <b>रीसेट किए गए मॉड्यूल:</b> %d
 
-  <b>Modules:</b>
+  <b>मॉड्यूल:</b>
   %s
 
-backup_reset_rate_limited: "⏳ Please wait <b>%s</b> before resetting again."
-backup_reset_creator_only: "❌ Only the group creator can reset settings."
+backup_reset_rate_limited: "⏳ फिर से रीसेट करने से पहले <b>%s</b> प्रतीक्षा करें।"
+backup_reset_creator_only: "❌ केवल ग्रुप क्रिएटर ही सेटिंग्स रीसेट कर सकते हैं।"
+
 backup_reset_confirm: |
-  <b>⚠️ Confirm Reset</b>
+  <b>⚠️ रीसेट की पुष्टि करें</b>
 
-  You are about to reset <b>%s modules</b>:
+  आप <b>%s मॉड्यूल</b> रीसेट करने वाले हैं:
   %s
 
-  <b>This action cannot be undone!</b> Are you sure?
+  <b>यह कार्रवाई पूर्ववर्ती नहीं की जा सकती!</b> क्या आप सुनिश्चित हैं?
 
-backup_reset_expired: "❌ Reset request has expired. Please start again with <code>/reset</code>."
-backup_reset_cancelled: "❌ Reset cancelled."
-backup_reset_failed: "❌ Reset failed: %s"
+backup_reset_expired: "❌ रीसेट अनुरोध समाप्त हो गया है। कृपया <code>/reset</code> के साथ फिर से शुरू करें।"
+backup_reset_cancelled: "❌ रीसेट रद्द कर दिया गया।"
+backup_reset_failed: "❌ रीसेट विफल: %s"
 
-button_confirm_import: "✅ Confirm Import"
-button_cancel_import: "❌ Cancel"
-button_confirm_reset: "⚠️ Yes, Reset All"
-button_cancel_reset: "❌ Cancel"
+button_confirm_import: "✅ इम्पोर्ट की पुष्टि करें"
+button_cancel_import: "❌ रद्द करें"
+button_confirm_reset: "⚠️ हां, सब रीसेट करें"
+button_cancel_reset: "❌ रद्द करें"
 
-backup_module_admin: "Admin Settings"
-backup_module_antiflood: "Antiflood"
-backup_module_blacklists: "Blacklists"
-backup_module_captcha: "Captcha"
-backup_module_connections: "Connections"
-backup_module_disabling: "Disabled Commands"
-backup_module_filters: "Filters"
-backup_module_greetings: "Greetings"
-backup_module_locks: "Locks"
-backup_module_notes: "Notes"
-backup_module_pins: "Pin Settings"
-backup_module_reports: "Reports"
-backup_module_rules: "Rules"
-backup_module_warns: "Warnings"
+backup_module_admin: "एडमिन सेटिंग्स"
+backup_module_antiflood: "एंटीफ्लड सेटिंग्स"
+backup_module_blacklists: "ब्लैकलिस्ट"
+backup_module_captcha: "कैप्चा"
+backup_module_connections: "कनेक्शंस"
+backup_module_disabling: "अक्षम कमांड"
+backup_module_filters: "फिल्टर्स"
+backup_module_greetings: "ग्रीटिंग्स"
+backup_module_locks: "लॉक्स"
+backup_module_notes: "नोट्स"
+backup_module_pins: "पिन सेटिंग्स"
+backup_module_reports: "रिपोर्ट्स"
+backup_module_rules: "नियम"
+backup_module_warns: "चेतावनियां"
+
+# Callback validation strings (previously hardcoded)
+common_callback_invalid_request: "अमान्य अनुरोध।"
+common_callback_message_unavailable: "संदेश अब उपलब्ध नहीं है।"
+
+# Admin module hardcoded strings
+admin_check_status_failed: "उपयोगकर्ता की स्थिति की जांच करने में विफल।"
+
+# Reactions module button strings
+reactions_button_add: "प्रतिक्रिया जोड़ें"
+reactions_button_remove: "प्रतिक्रिया हटाएं"
+
+# Database default strings
+db_blacklist_default_reason: "ब्लैकलिस्टेड शब्द: '%s'"
+
+# Duration formatting strings
+duration_format_seconds: "%d सेकंड"
+duration_format_minutes_seconds: "%d मिनट %d सेकंड"
+duration_format_minutes: "%d मिनट"
+duration_format_hours_minutes: "%d घंटे %d मिनट"
+duration_format_hours: "%d घंटे"
