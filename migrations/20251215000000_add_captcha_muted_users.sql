@@ -11,26 +11,13 @@ CREATE TABLE IF NOT EXISTS captcha_muted_users (
 CREATE INDEX IF NOT EXISTS idx_captcha_muted_user_chat ON captcha_muted_users(user_id, chat_id);
 CREATE INDEX IF NOT EXISTS idx_captcha_unmute_at ON captcha_muted_users(unmute_at);
 
--- Add foreign key constraints (optional, for data integrity)
--- These reference the users and chats tables if they exist
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users') THEN
-        ALTER TABLE captcha_muted_users
-        ADD CONSTRAINT fk_captcha_muted_user
-        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
-    END IF;
-EXCEPTION
-    WHEN duplicate_object THEN NULL;
-END $$;
+-- Add foreign key constraints.
+-- NOTE: The migration runner wraps ALTER TABLE ... ADD CONSTRAINT in an
+-- idempotent DO block during SQL cleaning, so keep these as plain statements.
+ALTER TABLE captcha_muted_users
+ADD CONSTRAINT fk_captcha_muted_user
+FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE;
 
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'chats') THEN
-        ALTER TABLE captcha_muted_users
-        ADD CONSTRAINT fk_captcha_muted_chat
-        FOREIGN KEY (chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE;
-    END IF;
-EXCEPTION
-    WHEN duplicate_object THEN NULL;
-END $$;
+ALTER TABLE captcha_muted_users
+ADD CONSTRAINT fk_captcha_muted_chat
+FOREIGN KEY (chat_id) REFERENCES chats(chat_id) ON DELETE CASCADE;

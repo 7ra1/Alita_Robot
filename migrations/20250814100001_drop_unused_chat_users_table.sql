@@ -81,12 +81,19 @@ DO $$
 DECLARE
     index_record RECORD;
 BEGIN
-    -- Drop all indexes on chat_users table
+    -- Drop only standalone indexes.
+    -- Constraint-backed indexes (PK/UNIQUE/EXCLUSION) must be removed via
+    -- ALTER TABLE ... DROP CONSTRAINT or by dropping the table itself.
     FOR index_record IN
-        SELECT indexname
-        FROM pg_indexes
-        WHERE tablename = 'chat_users'
-        AND schemaname = 'public'
+        SELECT i.indexname
+        FROM pg_indexes i
+        JOIN pg_class c ON c.relname = i.indexname
+        JOIN pg_namespace n ON n.oid = c.relnamespace
+        LEFT JOIN pg_constraint con ON con.conindid = c.oid
+        WHERE i.tablename = 'chat_users'
+        AND i.schemaname = 'public'
+        AND n.nspname = 'public'
+        AND con.oid IS NULL
     LOOP
         EXECUTE 'DROP INDEX IF EXISTS ' || index_record.indexname;
         RAISE NOTICE 'Dropped index: %', index_record.indexname;
